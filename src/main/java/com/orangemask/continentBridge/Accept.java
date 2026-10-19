@@ -11,6 +11,7 @@ public class Accept {
         SocketChannel client = serverSocket.accept();
         client.configureBlocking(false);
         client.register(selector, SelectionKey.OP_READ);
+        ClientManager.add(client);
         System.out.println("New connection : " + client.getRemoteAddress());
     }
 }

@@ -10,17 +10,17 @@ public class HandleRequest {
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buf = ByteBuffer.allocate(1024);
         int byteRead = channel.read(buf);
+
         if(byteRead == -1){
+            ClientManager.remove(channel);
             key.cancel();
             channel.close();
+            System.out.println("Client disconnected ");
             return;
         }
         buf.flip();
-        String request = new String(buf.array(), 0, byteRead);
-        System.out.println("Request : " + request);
-        String response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello";
-        ByteBuffer respBuf = ByteBuffer.wrap(response.getBytes());
-        channel.write(respBuf);
-        channel.close();
+        String message = new String(buf.array(),0,byteRead).trim();
+        System.out.println(message);
+        ClientManager.broadcast(channel,message);
     }
 }
