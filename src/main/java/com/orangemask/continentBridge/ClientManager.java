@@ -1,28 +1,17 @@
 package com.orangemask.continentBridge;
 
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 public class ClientManager {
-    private static final Set<SocketChannel> clients = HashSet.newHashSet(2);
-    public static void add(SocketChannel client){
-        clients.add(client);
+    private static final List<String> messages = new CopyOnWriteArrayList<>();
+
+    public static void addMessage(String message){
+        messages.add(message);
     }
-    public static void remove(SocketChannel client){
-        clients.remove(client);
-    }
-    public static void broadcast(SocketChannel sender, String message){
-        for(SocketChannel iterator : clients){
-            if(iterator == sender){
-                continue;
-            }
-            try {
-                iterator.write(ByteBuffer.wrap((message + "\n").getBytes()));
-            }catch(Exception e){
-                remove(iterator);
-            }
-        }
+
+    public static List<String> getMessage() {
+        return messages;
     }
 }
