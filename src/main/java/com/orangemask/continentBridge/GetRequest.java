@@ -18,18 +18,18 @@ public class GetRequest {
                     .header("Accept", "orangemask/json")
                     .header("User-Agent", "ContinentBridge/0.0")
                     .build();
-            HttpResponse<String>responce = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String>response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            int status = responce.statusCode();
+            int status = response.statusCode();
             if(status >= 200 && status < 300){
                 System.out.println("Status: " + status);
 
-                String body = responce.body();
+                String body = response.body();
                 System.out.println("Raw JSON:\n" + body);
                 System.out.println("Заголовок: " + extract(body, "\"title\":"));
                 System.out.println("Тело: " + extract(body, "\"body\":"));
             }else{
-                System.out.println("Error: " + status + ", body: " + responce.body());
+                System.out.println("Error: " + status + ", body: " + response.body());
             }
         }catch (Exception e){
             e.printStackTrace();
