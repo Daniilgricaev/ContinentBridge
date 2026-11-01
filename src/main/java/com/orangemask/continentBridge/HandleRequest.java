@@ -1,6 +1,7 @@
 package com.orangemask.continentBridge;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
+import gg.jte.TemplateException;
 import gg.jte.output.StringOutput;
 import gg.jte.resolve.DirectoryCodeResolver;
 import java.io.IOException;
@@ -17,7 +18,6 @@ public class HandleRequest {
     public static void handleRequest(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buf = ByteBuffer.allocate(1024);
-        Messages messages = new Messages();
         int byteRead = channel.read(buf);
 
         if(byteRead == -1){
@@ -38,20 +38,23 @@ public class HandleRequest {
                 String res = method[0];
                 System.out.println("Method :" + res);
                 if(res.equals("GET")){
-                    DirectoryCodeResolver codeResolver = new DirectoryCodeResolver(Paths.get("src/main/resources"));
-                    TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
+                    try {
+                        DirectoryCodeResolver codeResolver = new DirectoryCodeResolver(Paths.get("src/main/resources/jte"));
+                        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
+                        Map<String , Object>stringObjectMap = new HashMap<>();
+                        StringOutput output = new StringOutput();
+                        stringObjectMap.put("messages", Messages.getMessages());
+                        templateEngine.render("index.jte",stringObjectMap,output);
+                        String httpGET = "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: text/html; charset=UTF-8\r\n" +
+                                "Content-Length: " + output.toString().getBytes(StandardCharsets.UTF_8).length + "\r\n" +
+                                "\r\n" +
+                                output;
+                        channel.write(ByteBuffer.wrap(httpGET.getBytes(StandardCharsets.UTF_8)));
+                    }catch(TemplateException templateException){
+                        templateException.printStackTrace();
 
-                    Map<String , Object>stringObjectMap = new HashMap<>();
-
-                    StringOutput output = new StringOutput();
-                    stringObjectMap.put(message, ClientManager.getUSER());
-                    templateEngine.render("index.jte",stringObjectMap,output);
-                    String httpGET = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: text/html; charset=UTF-8\r\n" +
-                            "Content-Length: " + output.toString().getBytes(StandardCharsets.UTF_8).length + "\r\n" +
-                            "\r\n" +
-                            output;
-                    channel.write(ByteBuffer.wrap(httpGET.getBytes(StandardCharsets.UTF_8)));
+                    }
                 }
                 if(res.equals("POST")){
                     int index = message.indexOf("\r\n\r\n");
@@ -60,11 +63,11 @@ public class HandleRequest {
                         String start= "";
                         for(int i = 0;i <= 7;i++){
                             char a = body.charAt(i);
-                            start += a;
+                            start = start + a;
                         }
                         if(start.equals("message=")){
                             String cleanMessage = body.substring(8);
-                            messages.setMessages(cleanMessage);
+                            Messages.setMessages(cleanMessage);
 
                         }
                     }

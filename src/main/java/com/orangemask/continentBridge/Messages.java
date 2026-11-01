@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Messages {
     private static final Queue<String>messages = new ConcurrentLinkedDeque<>();
-    public Queue<String>getMessages(){
+    public static Queue<String>getMessages(){
         return messages;
     }
-    public void setMessages(String message){
+    public static void setMessages(String message){
         messages.add(message);
     }
-    public void delMessage(String message){
+    public static void delMessage(String message){
         messages.remove(message);
     }
 }

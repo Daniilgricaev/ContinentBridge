@@ -1,5 +1,4 @@
-@param String text
-@param String time
+@param Queue<String>messages
 <!DOCTYPE html>
 <html lang="ru">
 <head>
