@@ -17,6 +17,7 @@ public class HandleRequest {
     public static void handleRequest(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buf = ByteBuffer.allocate(1024);
+        Messages messages = new Messages();
         int byteRead = channel.read(buf);
 
         if(byteRead == -1){
@@ -37,7 +38,7 @@ public class HandleRequest {
                 String res = method[0];
                 System.out.println("Method :" + res);
                 if(res.equals("GET")){
-                    DirectoryCodeResolver codeResolver = new DirectoryCodeResolver(Paths.get("src/main/resources/jte"));
+                    DirectoryCodeResolver codeResolver = new DirectoryCodeResolver(Paths.get("src/main/resources"));
                     TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
 
                     Map<String , Object>stringObjectMap = new HashMap<>();
@@ -63,7 +64,8 @@ public class HandleRequest {
                         }
                         if(start.equals("message=")){
                             String cleanMessage = body.substring(8);
-                            ClientManager.addUSER(channel,cleanMessage);
+                            messages.setMessages(cleanMessage);
+
                         }
                     }
 
