@@ -1,4 +1,4 @@
-@param Queue<String>messages
+@param java.util.Queue<String> messages
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -109,7 +109,9 @@
 <div class="chat">
   <div class="chat-header">Chat</div>
   <div class="messages" id="messages">
-    <div class="msg other">${text}<span class="time">${time}</span></div>
+    @for(var m : messages)
+        <div class="msg other">${m}</div>
+    @endfor
   </div>
   <div class="input-area">
     <input type="text" id="input" placeholder="Enter message..." autocomplete="off">
@@ -120,11 +122,9 @@
 <script>
   const messages = document.getElementById('messages');
   const input = document.getElementById('input');
-
   function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
-
     const now = new Date();
     const time = now.getHours().toString().padStart(2, '0') + ':' +
                  now.getMinutes().toString().padStart(2, '0');
@@ -136,6 +136,11 @@
 
     input.value = '';
     messages.scrollTop = messages.scrollHeight;
+    fetch('/send', {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain; charset=UTF-8'},
+        body: 'message=' + text
+    });
   }
 
   input.addEventListener('keydown', e => {
