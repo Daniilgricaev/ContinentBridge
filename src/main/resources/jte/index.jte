@@ -9,25 +9,47 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: Arial, sans-serif;
-    background: #f0f2f5;
+    background: radial-gradient(circle at 30% 30%, #ffb347, #ff8c00 40%, #ff6a00 70%, #d94f00 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    margin: 0;
+  }
+  body::before,
+  body::after {
+    content: "Orange-Mask";
+    position: fixed;
+    top: 50%;
+    font-size: 3vw;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  body::before {
+    left: 10%;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  body::after {
+    right: 10%;
+    transform: translate(50%, -50%) rotate(-90deg);
   }
   .chat {
-    width: 100%;
-    max-width: 480px;
-    height: 600px;
-    background: #fff;
+    width: 150%;
+    max-width: 1000px;
+    height: 920px;
+    background: #F5922E;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0.5,0.7);
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
   .chat-header {
-    background: #4a76a8;
+    background: #F5922E;
     color: #fff;
     padding: 15px 20px;
     font-size: 18px;
@@ -81,7 +103,7 @@
   .input-area input {
     flex: 1;
     padding: 10px 14px;
-    border: 1px solid #ccc;
+    border: 1px solid #F5922E;
     border-radius: 20px;
     outline: none;
     font-size: 14px;
@@ -92,7 +114,7 @@
   .input-area button {
     margin-left: 8px;
     padding: 10px 18px;
-    background: #4a76a8;
+    background: #F5922E;
     color: #fff;
     border: none;
     border-radius: 20px;
@@ -135,12 +157,12 @@
     messages.appendChild(msg);
 
     input.value = '';
-    messages.scrollTop = messages.scrollHeight;
+        messages.scrollTop = messages.scrollHeight;
     fetch('/send', {
         method: 'POST',
         headers: {'Content-Type': 'text/plain; charset=UTF-8'},
         body: 'message=' + text
-    });
+    }).then(()=>location.reload());
   }
 
   input.addEventListener('keydown', e => {
