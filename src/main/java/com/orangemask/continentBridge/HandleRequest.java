@@ -18,6 +18,7 @@ public class HandleRequest {
     public static void handleRequest(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         ByteBuffer buf = ByteBuffer.allocate(1024);
+        Messages messages = new Messages();
         int byteRead = channel.read(buf);
 
         if(byteRead == -1){
@@ -44,6 +45,7 @@ public class HandleRequest {
                         Map<String , Object>stringObjectMap = new HashMap<>();
                         StringOutput output = new StringOutput();
                         stringObjectMap.put("messages", Messages.getMessages());
+                        stringObjectMap.put("currentChannel", channel);
                         templateEngine.render("index.jte",stringObjectMap,output);
                         String httpGET = "HTTP/1.1 200 OK\r\n" +
                                 "Content-Type: text/html; charset=UTF-8\r\n" +
@@ -53,7 +55,6 @@ public class HandleRequest {
                         channel.write(ByteBuffer.wrap(httpGET.getBytes(StandardCharsets.UTF_8)));
                     }catch(TemplateException templateException){
                         templateException.printStackTrace();
-
                     }
                 }
                 if(res.equals("POST")){
@@ -67,8 +68,7 @@ public class HandleRequest {
                         }
                         if(start.equals("message=")){
                             String cleanMessage = body.substring(8);
-                            Messages.setMessages(cleanMessage);
-
+                            messages.setMessages(channel , cleanMessage);
                         }
                     }
 

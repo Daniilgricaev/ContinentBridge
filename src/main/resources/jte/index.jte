@@ -1,4 +1,5 @@
-@param java.util.Queue<String> messages
+@param java.util.Queue<com.orangemask.continentBridge.Message> messages
+@param java.nio.channels.SocketChannel currentChannel
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -132,7 +133,11 @@
   <div class="chat-header">Chat</div>
   <div class="messages" id="messages">
     @for(var m : messages)
-        <div class="msg other">${m}</div>
+        @if(m.getSender() == currentChannel)
+            <div class="msg me">${m.getMessage()}</div>
+        @else
+            <div class="msg other">${m.getMessage()}</div>
+        @endif
     @endfor
   </div>
   <div class="input-area">
@@ -162,6 +167,10 @@
         method: 'POST',
         headers: {'Content-Type': 'text/plain; charset=UTF-8'},
         body: 'message=' + text
+    }).then(()=>location.reload());
+    fetch('/get', {
+        method: 'GET',
+        headers: {'Content-Type: text/html; charset=UTF-8'},
     }).then(()=>location.reload());
   }
 
